@@ -3,42 +3,108 @@
 const FACTORY_COLS = 5, FACTORY_ROWS = 5;
 const FACTORY_COLORS = ["red", "green", "blue", "yellow", "magenta"];
 //const topGrid = document.getElementById('top-grid');
+const FACTORY_BUILDING_DEFS = {
+    red: {
+        name: "Add Up",
+        type: "+",
+        base: 1,
+        perLevel: 0.1,
+        apply: (worth, value) => worth + value,
+        format: v => `+${fmt1(v)}`
+    },
+    green: {
+        name: "Multiply",
+        type: "*",
+        base: 1,
+        perLevel: 0.1,
+        apply: (worth, value) => worth * value,
+        format: v => `×${fmt1(v)}`
+    },
+    blue: {
+        name: "Subtract and Multiply",
+        type: "- / *",
+        base: -1,
+        base2: 2,
+        perLevel: -1,  // We'll extend leveling up for this later
+        perLevel2: 0.1, // We'll extend leveling up for this later
+        apply: (worth, v1, v2) => (worth + v1) * v2,
+        format: (v1, v2) => `(${fmt1(v1)}) ×${fmt1(v2)}`
+    },
+    yellow: {
+        name: "Add Up and Multiply",
+        type: "+ / *",
+        base: 1,
+        base2: 2,
+        perLevel: 1,
+        perLevel2: 0.1,
+        apply: (worth, v1, v2) => (worth + v1) * v2,
+        format: (v1, v2) => `(+${fmt1(v1)}) ×${fmt1(v2)}`
+    },
+    magenta: {
+        name: "Mystery",
+        type: "?",
+        base: 0,
+        perLevel: 0,
+        apply: (worth, value) => worth, // To be decided
+        format: v => `?`
+    }
+};
+
 
 window.factoryBuildings = {};
-
 // Initialize all to level 1, 0 xp
 function initFactoryBuildings() {
     window.factoryBuildings = {};
     document.querySelectorAll('#top-grid .building').forEach(building => {
         let color = FACTORY_COLORS.find(col => building.classList.contains(col));
         if (color) {
+            const def = FACTORY_BUILDING_DEFS[color];
             window.factoryBuildings[color] = {
                 level: 1,
                 xp: 0,
-                xpForLevel: 6, // Default XP for level up, can scale with level
+                xpForLevel: 6,
                 building,
                 bar: building.parentNode.querySelector('.factory-progress-bar-inner'),
+                type: def.type,
+                value: def.base,             // Set value from def.base
+                value2: def.base2            // Set value2 if it exists
             };
             // Reset bar visual to 0
             if (window.factoryBuildings[color].bar) {
                 window.factoryBuildings[color].bar.style.width = '0%';
             }
+
+            // Explicitly update values for re-initialization
+            window.factoryBuildings[color].value = def.base;
+            if (def.base2 !== undefined) window.factoryBuildings[color].value2 = def.base2;
         }
     });
 }
+
+
 
 window.initFactoryBuildings = initFactoryBuildings;
 
 // Level up handler (customize for more effects)
 function onFactoryBuildingLevelUp(color) {
-    window.factoryBuildings[color].level += 1;
-    window.factoryBuildings[color].xpForLevel = 6 + 2 * (window.factoryBuildings[color].level - 1);
-    // Update level label
-    const b = window.factoryBuildings[color].building;
-    if (b) {
-        const label = b.querySelector('.building-level-label');
-        if (label) label.textContent = 'Lvl ' + window.factoryBuildings[color].level;
+    const def = FACTORY_BUILDING_DEFS[color];
+    let b = window.factoryBuildings[color];
+    b.level += 1;
+    b.xpForLevel = 6 + 2 * (b.level - 1);
+
+    // Update values
+    b.value = def.base + (b.level - 1) * (def.perLevel || 0);
+    if (def.base2 !== undefined && def.perLevel2 !== undefined)
+        b.value2 = def.base2 + (b.level - 1) * (def.perLevel2 || 0);
+
+    // Update label
+    if (b.building) {
+        const label = b.building.querySelector('.building-level-label');
+        if (label) label.textContent = 'Lvl ' + b.level;
     }
+
+    updateFactoryUpdateValues();
+    animateUpdateButton(`update-btn-${color}`);
 }
 
 
@@ -193,6 +259,7 @@ function renderFactoryBuildings() {
         window.initFactoryBuildings();
     });
 }
+
 function bounceFactoryBuilding(color) {
     // Find building div in top grid with class matching the color
     const building = document.querySelector(`#top-grid .building.${color}`);
@@ -249,6 +316,13 @@ window.flyParticlesToBuilding = function(color, fromRects, onComplete) {
 };
 
 let coinDropInterval = null;
+let coinValue = 1;
+
+function setCoinValue(val) {
+    window.coinValue = val;
+    updateFactoryUpdateValues();
+    animateUpdateButton('update-btn-coin');
+}
 
 function dropCoin() {
     const factoryArea = document.getElementById('factory_area');
@@ -281,7 +355,7 @@ function dropCoin() {
     // Create coin element
     const coin = document.createElement('div');
     coin.className = 'factory-coin dropping_coin';
-    const coinValue = 1; // later you can change this value
+    coinValue = 1; // later you can change this value
     coin.dataset.value = coinValue;
 
     coin.style.left = `${startX - coinSize/2}px`;
@@ -303,6 +377,21 @@ function dropCoin() {
     }, 1400);
 }
 
+function applyFactoryBuildingsToCoin(worth) {
+    // Example: Only apply red and green for now
+    let newWorth = worth;
+    if (window.factoryBuildings.red)
+        newWorth = FACTORY_BUILDING_DEFS.red.apply(newWorth, window.factoryBuildings.red.value);
+    if (window.factoryBuildings.green)
+        newWorth = FACTORY_BUILDING_DEFS.green.apply(newWorth, window.factoryBuildings.green.value);
+
+    // If blue, yellow, magenta are involved, chain as needed:
+    // newWorth = DEF.apply(newWorth, val1, val2)
+
+    return newWorth;
+}
+
+
 // Start dropping a coin every second at game start
 window.startCoinDrop = function() {
     if (coinDropInterval) clearInterval(coinDropInterval);
@@ -322,19 +411,90 @@ function renderFactoryUpdates() {
     container.innerHTML = '';
 
     // Coin button
+    const coinCurrentValue = typeof window.coinValue === "number" ? window.coinValue : 1;
     const coinBtn = document.createElement('button');
+    coinBtn.id = 'update-btn-coin';
     coinBtn.className = 'update-btn';
-    coinBtn.innerHTML = `<span class="update-icon coin"></span> <span>Coin</span>`;
+    coinBtn.innerHTML = `
+        <div class="update-row-top">
+            <div class="update-icon coin"></div>
+            <div class="update-current" id="update-current-coin">${fmt1(coinCurrentValue)}</div>
+        </div>
+    `;
     container.appendChild(coinBtn);
 
-    // One for each building color
     FACTORY_COLORS.forEach(color => {
+        const def = FACTORY_BUILDING_DEFS[color];
+        const b = window.factoryBuildings && window.factoryBuildings[color];
+
+        // Compute values for this and next level
+        let level = b ? b.level : 1;
+        let nextLevel = level + 1;
+
+        let currentValue, nextValue;
+        if (color === 'blue' || color === 'yellow') {
+            // For blue/yellow, show both values if they use two parameters
+            currentValue = def.format(b ? b.value : def.base, b ? b.value2 : def.base2);
+            // Compute next values (simulate next level)
+            let nv1 = def.base + (nextLevel - 1) * (def.perLevel || 0);
+            let nv2 = (def.base2 !== undefined && def.perLevel2 !== undefined)
+                ? def.base2 + (nextLevel - 1) * (def.perLevel2 || 0)
+                : undefined;
+            nextValue = def.format(nv1, nv2);
+        } else {
+            currentValue = def.format(b ? b.value : def.base);
+            let nv = def.base + (nextLevel - 1) * (def.perLevel || 0);
+            nextValue = def.format(nv);
+        }
+
         const btn = document.createElement('button');
+        btn.id = `update-btn-${color}`;
         btn.className = 'update-btn';
-        btn.innerHTML = `<span class="update-icon ${color}"></span> <span>${color[0].toUpperCase()+color.slice(1)}</span>`;
+        btn.innerHTML = `
+            <div class="update-row-top">
+                <div class="update-icon ${color}"></div>
+                <div class="update-current" id="update-current-${color}">${currentValue}</div>
+            </div>
+        `;
+
         container.appendChild(btn);
     });
+
 }
 
 // Call after rendering/reinitializing buildings:
 renderFactoryUpdates();
+
+function updateFactoryUpdateValues() {
+    // Update coin value
+    const coinEl = document.getElementById('update-current-coin');
+    if (coinEl) coinEl.textContent = fmt1(typeof window.coinValue === "number" ? window.coinValue : 1);
+
+    // Update building values
+    FACTORY_COLORS.forEach(color => {
+        const def = FACTORY_BUILDING_DEFS[color];
+        const b = window.factoryBuildings && window.factoryBuildings[color];
+        let valueText;
+        if (color === 'blue' || color === 'yellow') {
+            valueText = def.format(b ? b.value : def.base, b ? b.value2 : def.base2);
+        } else {
+            valueText = def.format(b ? b.value : def.base);
+        }
+        const el = document.getElementById(`update-current-${color}`);
+        if (el) el.textContent = valueText;
+    });
+}
+window.updateFactoryUpdateValues = updateFactoryUpdateValues;
+
+function animateUpdateButton(id) {
+    const btn = document.getElementById(id);
+    if (btn) {
+        btn.classList.remove('bounce-green'); // reset
+        // Force reflow so animation can replay
+        void btn.offsetWidth;
+        btn.classList.add('bounce-green');
+        // Optionally remove class after animation
+        setTimeout(() => btn.classList.remove('bounce-green'), 700);
+    }
+}
+window.animateUpdateButton = animateUpdateButton;

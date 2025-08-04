@@ -20,6 +20,10 @@ function renderGrid(gridEl, cols, rows, cellClass) {
 
 window.currency = 0;
 
+function fmt1(x) {
+    return Number.isInteger(x) ? x.toString() : x.toFixed(1).replace(/\.0$/, "");
+}
+
 function setCurrency(val) {
     window.currency = val;
     document.getElementById('currency-amount').textContent = val;
