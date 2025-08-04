@@ -313,5 +313,28 @@ window.stopCoinDrop = function() {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
-    //window.startCoinDrop();
+    window.startCoinDrop();
 });
+
+function renderFactoryUpdates() {
+    const container = document.getElementById('factory_updates');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Coin button
+    const coinBtn = document.createElement('button');
+    coinBtn.className = 'update-btn';
+    coinBtn.innerHTML = `<span class="update-icon coin"></span> <span>Coin</span>`;
+    container.appendChild(coinBtn);
+
+    // One for each building color
+    FACTORY_COLORS.forEach(color => {
+        const btn = document.createElement('button');
+        btn.className = 'update-btn';
+        btn.innerHTML = `<span class="update-icon ${color}"></span> <span>${color[0].toUpperCase()+color.slice(1)}</span>`;
+        container.appendChild(btn);
+    });
+}
+
+// Call after rendering/reinitializing buildings:
+renderFactoryUpdates();

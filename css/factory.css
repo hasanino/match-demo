@@ -155,3 +155,80 @@
     width: 16px;
     height: 16px;
 }
+
+#factory_row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 2vw;
+    width: 100%;
+    min-height: calc(28vh + 15px);
+    box-sizing: border-box;
+}
+
+#factory_area {
+    position: relative;
+    width: min(92vw, 48vh);
+    max-width: 260px;
+    min-width: 140px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    /* Remove margin-bottom or set to 0 if it's pushing updates down */
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+
+#factory_updates {
+    min-width: 76px;
+    max-width: 110px;
+    padding-top: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    box-sizing: border-box;
+    /* Optional: to keep height consistent with factory_area */
+    height: 100%;
+    /* Optional border or background for debug: */
+    /* border: 1px dashed #eee; */
+}
+
+
+.update-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    border: 2px solid #e6e6e6;
+    background: #fff;
+    border-radius: 12px;
+    padding: 7px 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 7px rgba(210,210,230,0.08);
+    /*font-size: 1em;*/
+    min-width: 0;
+    min-height: 38px;
+    /*font-weight: 600;*/
+    transition: border 0.15s, box-shadow 0.16s, background 0.12s;
+}
+.update-btn:hover, .update-btn:focus {
+    border-color: #9cbeff;
+    background: #eef5ff;
+}
+.update-btn .update-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 0;
+}
+
+.update-btn .update-icon.coin {
+    background: radial-gradient(circle at 30% 35%, #fffbe5 80%, #f9cb42 100%);
+    border: 2px solid #e6b933;
+}
+.update-btn .update-icon.red      { background: #e04a4a; }
+.update-btn .update-icon.green    { background: #45d872; }
+.update-btn .update-icon.blue     { background: #4a83e0; }
+.update-btn .update-icon.yellow   { background: #ffe27a; }
+.update-btn .update-icon.magenta  { background: #e66aff; }
