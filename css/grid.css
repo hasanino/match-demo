@@ -1,0 +1,52 @@
+/* --- GRID LAYOUT & SIZING --- */
+.game-grid {
+    display: grid;
+    background: #f2f4f8;
+    border-radius: 18px;
+    box-shadow: 0 2px 12px rgba(200,210,225,0.13);
+    /*
+    padding: 0.7vh;
+    gap: 0.7vh;
+    */
+    align-self: center;
+    justify-self: center;
+    margin: 0 auto;
+}
+
+#bottom-grid {
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    width: min(80vw, 35vh);
+    aspect-ratio: 6 / 7;
+    /*border: 2.5px solid #ffdc96;*/
+    max-width: 420px;
+}
+
+.grid-cell {
+    background: #ffffff;
+    border-radius: 9px;
+    border: 1.5px solid #e2e7ef;
+    box-shadow: 0 1px 3px rgba(210,220,230,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.23rem;
+    user-select: none;
+    transition: background 0.15s;
+    aspect-ratio: 1 / 1;
+}
+
+.grid-cell:active {
+    background: #d0e7fd;
+}
+
+@media (max-width: 600px) {
+    #top-grid {
+        width: min(99vw, 35vh);
+        max-width: 100vw;
+    }
+    #bottom-grid {
+        width: min(99vw, 40vh);
+        max-width: 100vw;
+    }
+}

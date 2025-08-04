@@ -1,0 +1,96 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: #f6f7fa;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    box-sizing: border-box;
+}
+
+#game-header, #game-footer {
+    text-align: center;
+    background: #e3e7ed;
+    color: #516070;
+    flex-shrink: 0;
+    font-size: 1.15rem;
+    padding: 0;
+    user-select: none;
+    line-height: 1;
+    box-shadow: 0 1px 4px #e5e5ef29;
+}
+
+#game-header {
+    height: 0vh;
+    min-height: 36px;
+    max-height: 48px;
+    border-bottom: 1px solid #dee3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game-footer {
+    height: 0vh;
+    min-height: 36px;
+    max-height: 48px;
+    border-top: 1px solid #dee3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#game-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;  /* <-- was center, change to flex-start */
+    justify-content: space-evenly;
+    gap: 1.5vh;
+    min-height: 0;
+    min-width: 0;
+}
+
+@media (max-width: 600px) {
+    #game-header, #game-footer {
+        font-size: 1rem;
+        min-height: 28px;
+    }
+}
+
+#currency-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    gap: 8px;
+    padding-right: 20px;
+    font-size: 1.15em;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-weight: 600;
+}
+
+.currency-coin-icon {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #ffe27a;
+    border: 2px solid #e6b933;
+    box-shadow: 0 1px 5px #e8b42c38;
+    position: relative;
+    margin-right: 3px;
+}

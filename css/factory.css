@@ -1,0 +1,157 @@
+/* FACTORY (top grid) MECHANIC */
+#factory_area {
+    position: relative;
+    width: min(92vw, 48vh);   /* was min(80vw, 40vh) */
+    max-width: 260px;         /* was 200px */
+    min-width: 140px;         /* was 120px */
+    min-height: calc(28vh + 15px); /* height of grid + coin_output */
+    margin-left: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#top-grid {
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    width: 100%;                /* now fills parent */
+    max-width: none;
+    aspect-ratio: unset;
+}
+
+
+
+#top-grid,
+#coin_output {
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+}
+
+#top-grid {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+#factory_area {
+    margin-left: 0;
+}
+
+#top-grid .building {
+    width: 60%;
+    height: 70%;
+    border-radius: 50%;
+    margin: 0 auto;
+    margin-top: 15%;
+    box-shadow: 0 2px 8px rgba(140,140,160,0.13);
+    display: block;
+    transition: filter 0.12s;
+    border: 1px solid #000000;
+    position: relative;
+}
+
+#top-grid .building.red      { background: #e04a4a; }
+#top-grid .building.green    { background: #45d872; }
+#top-grid .building.blue     { background: #4a83e0; }
+#top-grid .building.yellow   { background: #ffe27a; }
+#top-grid .building.magenta  { background: #e66aff; }
+
+@keyframes building-bounce {
+    0%   { transform: scale(1);}
+    30%  { transform: scale(1.23);}
+    55%  { transform: scale(0.94);}
+    72%  { transform: scale(1.12);}
+    90%  { transform: scale(0.98);}
+    100% { transform: scale(1);}
+}
+
+#top-grid .building.bounce {
+    animation: building-bounce 0.66s cubic-bezier(.35,1.4,.35,1) both;
+    z-index: 2;
+}
+
+#top-grid .building-level-label {
+    position: absolute;
+    left: 0; right: 0; top: 50%; transform: translateY(-50%);
+    text-align: center;
+    width: 100%;
+    font-size: 0.5em;
+    color: #fff;
+    font-weight: 600;
+    /*text-shadow: 0 1px 3px #fff, 0 0px 1px #fff;*/
+    pointer-events: none;
+    letter-spacing: 0.01em;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    user-select: none;
+    z-index: 2;
+}
+
+
+#top-grid .factory-progress-bar {
+    width: 64%;
+    height: 15%;
+    margin: 5% auto 0 auto;
+
+    background: white;
+    position: relative;
+    overflow: hidden;
+    display: block;
+    border: 1px solid #444; /* dark gray border */
+}
+
+#top-grid .factory-progress-bar-inner {
+    width: 0%; /* 50% filled by default */
+    height: 100%;
+    background: linear-gradient(90deg, #4be275, #27c04b 85%);
+    border-radius: 0px;
+    transition: width 0.28s;
+}
+
+
+#top-grid .factory-stack {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+}
+
+#coin_output {
+    /*width: min(80vw, 37vh);*/
+    /*max-width: 200px;*/
+    width: 100%;
+    height: 15px;
+    border-left: 1px solid #000;
+    border-bottom: 1px solid #000;
+    border-right: 1px solid #000;
+    box-sizing: border-box;
+    background-color: #e3e7ed;
+}
+
+.factory-coin {
+    position: absolute;
+    z-index: 10;
+    width: 16px;
+    height: 16px;
+    left: 0; top: 0;
+    border-radius: 50%;
+    background: #ffe27a;
+    border: 2px solid #e6b933;
+    box-shadow: 0 1px 8px 0 #e8b42c38;
+    transition: transform 3.4s cubic-bezier(.3,1.6,.45,1), opacity 0.3s;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #c0972b;
+    font-weight: bold;
+}
+
+.particle-fly.coin-particle {
+    background: radial-gradient(circle at 30% 35%, #fffbe5 80%, #f9cb42 100%);
+    border: 2px solid #e6b933;
+    box-shadow: 0 1px 5px #e8b42c38;
+    width: 16px;
+    height: 16px;
+}
