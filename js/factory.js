@@ -313,5 +313,5 @@ window.stopCoinDrop = function() {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
-    window.startCoinDrop();
+    //window.startCoinDrop();
 });
